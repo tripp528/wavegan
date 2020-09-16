@@ -1,7 +1,8 @@
 from scipy.io.wavfile import read as wavread
 import numpy as np
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_eager_execution()
 
 import sys
 
@@ -47,7 +48,7 @@ def decode_audio(fp, fs=None, num_channels=1, normalize=False, fast_wav=False):
   else:
     nsamps, nch = _wav.shape
   _wav = np.reshape(_wav, [nsamps, 1, nch])
- 
+
   # Average (mono) or expand (stereo) channels
   if nch != num_channels:
     if num_channels == 1:
@@ -156,7 +157,7 @@ def decode_extract_and_batch(
       audio = audio[start:]
 
     # Extract sliceuences
-    audio_slices = tf.contrib.signal.frame(
+    audio_slices = tf.signal.frame(
         audio,
         slice_len,
         slice_hop,
@@ -194,5 +195,5 @@ def decode_extract_and_batch(
 
   # Get tensors
   iterator = dataset.make_one_shot_iterator()
-  
+
   return iterator.get_next()
